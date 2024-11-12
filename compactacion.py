@@ -50,25 +50,38 @@ def mover_a_ejecutando():
                     proceso.tiene_recurso = True
                     procesos_ocupando_recurso[proceso.recurso] = proceso.id
                     actualizar_interfaz()
-            # Simular la ejecución
-            time.sleep(2)  # Simulación del tiempo de ejecución
-            
-            # Aquí verificamos si ya ha sido bloqueado 3 veces
-            if proceso.veces_bloqueado < 3:
-                proceso.veces_bloqueado += 1
-                proceso.estado = 'Bloqueado'
-                procesos_bloqueados.append(proceso)
-            else:
-                # Si ya ha sido bloqueado 3 veces, pasará a terminado
+
+            # Probabilidad del 20% de que el proceso se quede en ejecución y pase directamente a terminado
+            if random.random() < 0.2:
+                time.sleep(5)  # Ejecución de 5 segundos
                 proceso.estado = 'Terminado'
                 procesos_terminados.append(proceso)
                 liberar_paginas(proceso)
                 eliminar_proceso_terminado_de_memoria()
-                liberar_recurso(proceso)  # Liberar el recurso cuando el proceso termina
+                liberar_recurso(proceso)
                 actualizar_interfaz()
+            else:
+                # Simulación normal de ejecución
+                time.sleep(2)  # Ejecución de 2 segundos
+                
+                # Verificar si ha sido bloqueado menos de 3 veces
+                if proceso.veces_bloqueado < 3:
+                    proceso.veces_bloqueado += 1
+                    proceso.estado = 'Bloqueado'
+                    procesos_bloqueados.append(proceso)
+                else:
+                    # Si ha sido bloqueado 3 veces, pasa a terminado
+                    proceso.estado = 'Terminado'
+                    procesos_terminados.append(proceso)
+                    liberar_paginas(proceso)
+                    eliminar_proceso_terminado_de_memoria()
+                    liberar_recurso(proceso)
+                    actualizar_interfaz()
+            
             proceso_ejecucion = None
             actualizar_interfaz()
         time.sleep(2)
+
 
 # Función para eliminar un proceso terminado de la memoria gráfica
 # Función para eliminar un proceso terminado de la memoria gráfica
@@ -273,9 +286,6 @@ def actualizar_estado_recursos():
         estado = f"{recurso}: {'Libre' if procesos_ocupando_recurso[i] is None else f'Ocupado por P{procesos_ocupando_recurso[i]}'}"
         recurso_labels[i].config(text=estado)
 
-# Configuración de la interfaz gráfica
-# Configuración de la interfaz gráfica
-# Configuración de la interfaz gráfica
 # Configuración de la interfaz gráfica
 ventana = tk.Tk()
 ventana.title("Simulación de Procesos y Memoria")
