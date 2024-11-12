@@ -36,7 +36,6 @@ class Proceso:
         return f"P{self.id}: ({self.memoria} MB) Recurso: R{self.recurso}"
 
 # Función para mover un proceso de Listo a Ejecutando
-# Función para mover un proceso de Listo a Ejecutando
 def mover_a_ejecutando():
     global proceso_ejecucion
     while True:
@@ -44,29 +43,38 @@ def mover_a_ejecutando():
             proceso = procesos_listos.pop(0)
             proceso_ejecucion = proceso
             proceso.estado = 'Ejecutando'
-            root.after(0, actualizar_interfaz)  # Cambiar aquí
+            root.after(0, actualizar_interfaz)
 
             if not proceso.tiene_recurso:
                 if recursos_semaforos[proceso.recurso].acquire(blocking=False):
                     proceso.tiene_recurso = True
                     procesos_ocupando_recurso[proceso.recurso] = proceso.id
-                    root.after(0, actualizar_interfaz)  # Cambiar aquí
+                    root.after(0, actualizar_interfaz)
                     time.sleep(1)
 
-            time.sleep(2)
-            
-            if proceso.veces_bloqueado < 3:
-                proceso.veces_bloqueado += 1
-                proceso.estado = 'Bloqueado'
-                procesos_bloqueados.append(proceso)
-            else:
+            # Generar una probabilidad para que el proceso permanezca 5 segundos y termine
+            if random.random() < 0.2:  # 20% de probabilidad
+                time.sleep(5)  # Mantener en ejecución durante 5 segundos
                 proceso.estado = 'Terminado'
                 procesos_terminados.append(proceso)
                 liberar_paginas(proceso)
                 liberar_recurso(proceso)
+            else:
+                time.sleep(2)
+                
+                # El proceso pasa a bloqueado si no se termina
+                if proceso.veces_bloqueado < 3:
+                    proceso.veces_bloqueado += 1
+                    proceso.estado = 'Bloqueado'
+                    procesos_bloqueados.append(proceso)
+                else:
+                    proceso.estado = 'Terminado'
+                    procesos_terminados.append(proceso)
+                    liberar_paginas(proceso)
+                    liberar_recurso(proceso)
 
             proceso_ejecucion = None
-            root.after(0, actualizar_interfaz)  # Cambiar aquí
+            root.after(0, actualizar_interfaz)
 
         time.sleep(2)
 
@@ -215,9 +223,6 @@ def actualizar_tabla_paginacion():
             tabla_paginacion.insert("", "end", values=(marco, marco, proceso_id))
 
 
-# Función para mostrar visualmente el uso de la memoria
-# Función para mostrar visualmente el uso de la memoria
-# Función para mostrar visualmente el uso de la memoria
 # Función para mostrar visualmente el uso de la memoria
 def mostrar_procesos_en_memoria():
     canvas.delete("all")  # Limpiar el canvas
