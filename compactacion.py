@@ -6,7 +6,7 @@ import time
 # Configuración de la memoria
 MEMORIA_TOTAL = 1000  # Memoria total disponible (en MB)
 MEMORIA_USADA = 0  # Memoria actualmente en uso (en MB)
-TAMANO_PAGINA = 50  # Tamaño de cada página en MB
+TAMANO_PAGINA = 10  # Tamaño de cada página en MB
 NUMERO_PAGINAS = MEMORIA_TOTAL // TAMANO_PAGINA  # Cantidad total de páginas en memoria
 paginas_memoria = [None] * NUMERO_PAGINAS  # Tabla de páginas para la memoria
 
