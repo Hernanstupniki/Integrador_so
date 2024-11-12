@@ -274,12 +274,14 @@ def actualizar_estado_recursos():
         recurso_labels[i].config(text=estado)
 
 # Configuración de la interfaz gráfica
+# Configuración de la interfaz gráfica
+# Configuración de la interfaz gráfica
+# Configuración de la interfaz gráfica
 ventana = tk.Tk()
 ventana.title("Simulación de Procesos y Memoria")
 
 frame_principal = tk.Frame(ventana)
 frame_principal.pack(padx=10, pady=10)
-
 
 # Widgets de memoria y procesos
 memoria_label = tk.Label(frame_principal, text=f"Memoria Usada: {MEMORIA_USADA}/{MEMORIA_TOTAL} MB", font=("Arial", 14))
@@ -291,35 +293,11 @@ canvas_frame.pack(pady=10)
 canvas = tk.Canvas(canvas_frame, width=500, height=125, bg="white")
 canvas.pack()
 
-# Configuración de listas para los estados de los procesos
-nuevos_frame = tk.Frame(ventana)
-nuevos_frame.pack(side=tk.LEFT, padx=10)
-nuevos_label = tk.Label(nuevos_frame, text="Nuevos")
-nuevos_label.pack()
-nuevos_listbox = tk.Listbox(nuevos_frame, width=30, height=10)
-nuevos_listbox.pack()
+# Estado de ejecución y mensajes
+ejecucion_label = tk.Label(frame_principal, text=f"Ejecutando: Ninguno", font=("Arial", 14))
+ejecucion_label.pack(pady=(10, 5))  # Espacio adicional debajo para centrar mejor
 
-listos_frame = tk.Frame(ventana)
-listos_frame.pack(side=tk.LEFT, padx=10)
-listos_label = tk.Label(listos_frame, text="Listos")
-listos_label.pack()
-listos_listbox = tk.Listbox(listos_frame, width=30, height=10)
-listos_listbox.pack()
-
-bloqueados_frame = tk.Frame(ventana)
-bloqueados_frame.pack(side=tk.LEFT, padx=10)
-bloqueados_label = tk.Label(bloqueados_frame, text="Bloqueados")
-bloqueados_label.pack()
-bloqueados_listbox = tk.Listbox(bloqueados_frame, width=30, height=10)
-bloqueados_listbox.pack()
-
-terminados_frame = tk.Frame(ventana)
-terminados_frame.pack(side=tk.LEFT, padx=10)
-terminados_label = tk.Label(terminados_frame, text="Terminados")
-terminados_label.pack()
-terminados_listbox = tk.Listbox(terminados_frame, width=30, height=10)
-terminados_listbox.pack()
-
+# Control Frame para agregar procesos manualmente y aleatorios, ahora debajo del proceso en ejecución
 control_frame = tk.Frame(frame_principal)
 control_frame.pack(pady=10)
 
@@ -332,18 +310,55 @@ agregar_btn.pack(side=tk.LEFT, padx=(5, 0))
 agregar_aleatorio_btn = tk.Button(control_frame, text="Agregar Proceso Aleatorio", command=agregar_proceso_aleatorio)
 agregar_aleatorio_btn.pack(side=tk.LEFT, padx=(5, 0))
 
-# Estado de ejecución y mensajes
-ejecucion_label = tk.Label(frame_principal, text=f"Ejecutando: Ninguno", font=("Arial", 14))
-ejecucion_label.pack()
-mensaje_error = tk.Label(ventana, text="", fg="red")
-mensaje_error.pack()
+# Crear un contenedor para los listboxes de los estados de los procesos y centrarlo
+estados_frame = tk.Frame(frame_principal)
+estados_frame.pack(pady=10)
 
-# Estado de los recursos
+# Configuración de listas para los estados de los procesos
+nuevos_frame = tk.Frame(estados_frame)
+nuevos_frame.grid(row=0, column=0, padx=10)
+nuevos_label = tk.Label(nuevos_frame, text="Nuevos")
+nuevos_label.pack()
+nuevos_listbox = tk.Listbox(nuevos_frame, width=30, height=10)
+nuevos_listbox.pack()
+
+listos_frame = tk.Frame(estados_frame)
+listos_frame.grid(row=0, column=1, padx=10)
+listos_label = tk.Label(listos_frame, text="Listos")
+listos_label.pack()
+listos_listbox = tk.Listbox(listos_frame, width=30, height=10)
+listos_listbox.pack()
+
+bloqueados_frame = tk.Frame(estados_frame)
+bloqueados_frame.grid(row=0, column=2, padx=10)
+bloqueados_label = tk.Label(bloqueados_frame, text="Bloqueados")
+bloqueados_label.pack()
+bloqueados_listbox = tk.Listbox(bloqueados_frame, width=30, height=10)
+bloqueados_listbox.pack()
+
+terminados_frame = tk.Frame(estados_frame)
+terminados_frame.grid(row=0, column=3, padx=10)
+terminados_label = tk.Label(terminados_frame, text="Terminados")
+terminados_label.pack()
+terminados_listbox = tk.Listbox(terminados_frame, width=30, height=10)
+terminados_listbox.pack()
+
+# Crear un frame para el estado de los recursos, a la derecha de "Terminados"
+recursos_frame = tk.Frame(estados_frame)
+recursos_frame.grid(row=0, column=4, padx=10)
+
+recursos_label = tk.Label(recursos_frame, text="Estado de Recursos", font=("Arial", 12))
+recursos_label.pack()
+
+# Labels para mostrar el estado de cada recurso
 recurso_labels = []
 for i in range(3):
-    label = tk.Label(ventana, text=f"R{i}: Libre")
+    label = tk.Label(recursos_frame, text=f"R{i}: Libre")
     label.pack()
     recurso_labels.append(label)
+
+mensaje_error = tk.Label(ventana, text="", fg="red")
+mensaje_error.pack()
 
 # Iniciar los hilos para simular los procesos
 threading.Thread(target=nuevo_a_listo, daemon=True).start()
